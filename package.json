@@ -1,0 +1,12 @@
+{
+  "name": "mqtt-ws-demo",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "bower": "^1.6.8",
+    "express": "~4.1.1"
+  },
+  "scripts": {
+    "start": "npm install && bower install && node app.js"
+  }
+}

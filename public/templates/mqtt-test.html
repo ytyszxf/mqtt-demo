@@ -1,0 +1,151 @@
+ <div class="container" ng-init="init()">
+  <!-- Example row of columns -->
+  <div class="row">
+    <div class="col-md-12 well">
+      <form class="form-inline">
+	    <div class="form-group">
+		  <label for="appID">App ID</label>
+		  <input ng-hide="sdkInitialized" type="text" class="form-control" id="appID" ng-model="KiiInfo.appID">
+		  <span ng-show="sdkInitialized">{{KiiInfo.appID}}</span>
+		</div>
+		<div class="form-group">
+		  <label for="appKey">App Key</label>
+		  <input ng-hide="sdkInitialized" type="text" class="form-control" id="appKey" ng-model="KiiInfo.appKey">
+		  <span ng-show="sdkInitialized">{{KiiInfo.appID}}</span>
+		</div>
+		<select ng-disabled="sdkInitialized" class="form-control" ng-model="KiiInfo.site">
+		  <option>dev-jp</option>
+		  <option>CN3</option>
+		</select>
+		<button ng-hide="sdkInitialized" type="submit" class="btn btn-default" ng-click="onClickSetEnvironment()">Set environment</button>
+		<button ng-show="sdkInitialized" type="submit" class="btn btn-default" ng-click="resetEnvironment()">Edit environment</button>
+	  </form>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="well">User Dashboard</h3>
+      <form class="form">
+	    <div class="form-group">
+		  <label for="username">Username</label>
+		  <input type="text" class="form-control" id="username" ng-model="userInfo.userName" ng-disabled="!sdkInitialized">
+		</div>
+		<div class="form-group">
+		  <label for="password">Password</label>
+		  <input type="password" class="form-control" id="password" ng-model="userInfo.password" ng-disabled="!sdkInitialized">
+		</div>
+		<button type="submit" class="btn btn-default" ng-click="onClickRegisterUser(userInfo)" ng-disabled="!sdkInitialized">Register user</button>
+	  </form>
+	  <hr>
+	  <form class="form">
+	    <div class="form-group">
+		  <label for="vendorThingID">VendorThingID</label>
+		  <input type="text" class="form-control" ng-model="thingInfo.vendorThingID" ng-disabled="!sdkInitialized||!isMQTTConnectedForUser" id="vendorThingID" >
+		</div>
+		<div class="form-group">
+		  <label for="thingPassword">Password</label>
+		  <input type="password" class="form-control" ng-model="thingInfo.password" ng-disabled="!sdkInitialized||!isMQTTConnectedForUser" id="thingPassword" >
+		</div>
+		<button type="submit" class="btn btn-default" ng-click="onClickRegisterThing(thingInfo)" ng-disabled="!sdkInitialized||!isMQTTConnectedForUser">Register thing</button>
+	  </form>
+	  <hr>
+	  <form class="form">
+	    <div class="form-group">
+		  <label for="commandPayload">Command actions</label>
+		  <div class="form-inline">
+		  	<input class="form-control" type="text" ng-model="action.name" ng-disabled="!sdkInitialized||!isMQTTConnectedForUser||!isMQTTConnectedForThing"/>
+		  	<select class="form-control" ng-model="action.type" ng-disabled="!sdkInitialized||!isMQTTConnectedForUser||!isMQTTConnectedForThing">
+			  <option>string</option>
+			  <option>boolean</option>
+			  <option>number</option>
+			</select>
+		  	<input class="form-control" type="text" ng-model="action.value" ng-disabled="!sdkInitialized||!isMQTTConnectedForUser||!isMQTTConnectedForThing"/>
+		  	<button class="btn btn-positive" ng-disabled="!sdkInitialized||!isMQTTConnectedForUser||!isMQTTConnectedForThing" ng-click="onClickAddAction(action)">+</button>
+		  </div>
+		  <table class="table table-striped">
+		  	<tr>
+		  	  <th>name</th>
+		  	  <th>type</th>
+		  	  <th>value</th>
+		  	  <th></th>
+		  	</tr>
+		  	<tr ng-repeat="actionValue in selectedActions">
+		  	  <td>{{actionValue.name}}</td>
+		  	  <td>{{actionValue.type}}</td>
+		  	  <td>{{actionValue.value}}</td>
+		  	  <td><button class="btn btn-danger" ng-click="onClickDeleteAction($index)">X</button></td>
+		  	</tr>
+		  </table>
+		  <!--
+		  <textarea type="text" class="form-control" ng-readonly="!sdkInitialized||!isMQTTConnectedForUser||!isMQTTConnectedForThing" id="commandPayload">{{userMessage.actions}}</textarea>
+		  -->
+		</div>
+		<button type="submit" class="btn btn-default" ng-click="onClickSendCommand()" ng-disabled="!sdkInitialized||!isMQTTConnectedForUser||!isMQTTConnectedForThing">Send command</button>
+	  </form>
+	  <hr>
+	  <form class="form">
+	    <!-- <div class="form-group">
+		  <label for="actionResults">Action results</label>
+		  <textarea type="text" class="form-control" id="actionResults" ng-model="userMessage.receivedActionResults" readonly/>
+		</div> -->
+
+		<label for="actionResults">Action results</label>
+		<div class="form-group" ng-repeat="result in userMessage.receivedActionResults">  
+		  	<label>{{result.commandID}}</label>
+		  	<textarea type="text" class="form-control ng-valid ng-not-empty ng-dirty ng-touched" id="actionResults" readonly>{{result.actionResults}}</textarea>
+		  
+	    </div>
+	  </form>
+
+    </div>
+    <div class="col-md-6">
+      <h3 class="well">Thing Dashboard</h3>
+      <p>Status: {{isMQTTConnectedForThing?"Connected":"Not Connected"}}</p>
+      <!-- <form class="form">
+	    <div class="form-group">
+		  <label for="actionResults">Actions</label>
+		  <textarea type="text" class="form-control ng-valid ng-not-empty ng-dirty ng-touched" ng-model="thingMessage.receivedActions" id="actionResults" readonly/>
+		</div>
+	  </form> -->
+	  <form class="form">
+	  	<label for="actionResults">Actions</label>
+		<div class="form-group" ng-repeat="actions in thingMessage.receivedActions">  
+          
+		  	<input type="radio" ng-model="$parent.thingMessage.commandID" value="{{actions.commandID}}">
+		  	{{actions.commandID}}</input>
+		  	<textarea type="text" class="form-control ng-valid ng-not-empty ng-dirty ng-touched" id="actionResults" readonly>{{actions}}</textarea>
+		  
+	    </div>
+	  </form>
+	  <hr>
+	  <form class="form">
+	    <div class="form-group">
+		  <label for="thingState">State</label>
+		  <textarea type="text" class="form-control" ng-disabled="!sdkInitialized||!isMQTTConnectedForUser||!isMQTTConnectedForThing" ng-model="thingMessage.state" id="thingState"/>
+		</div>
+		<button type="submit" class="btn btn-default" ng-click="onClickUpdateState()" ng-disabled="!sdkInitialized||!isMQTTConnectedForUser">Update state</button>
+	  </form>
+	  <hr>
+	  <form class="form">
+	    <div class="form-group">
+		  <label for="sendActionResults">Send Action Results</label>
+		  <textarea type="text" class="form-control" ng-disabled="!sdkInitialized||!isMQTTConnectedForUser||!isMQTTConnectedForThing" ng-model="thingMessage.actionResults" id="sendActionResults"/>
+		</div>
+		<button type="submit" class="btn btn-default" ng-click="onClickSendActionResults()" ng-disabled="!sdkInitialized||!isMQTTConnectedForUser||!isMQTTConnectedForThing">Send action results</button>
+	  </form>
+   </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12 well">
+      <button type="button" class="btn btn-default" ng-click="showConsole = !showConsole">Toggle console</button>
+      <hr>
+	  <div uib-collapse="showConsole">
+        <form class="form">
+      	  <div class="form-group">
+      	   <textarea class="form-control monospace">{{consoleOutput()}}</textarea>
+      	  </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,17 @@
+/* app css stylesheet */
+.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+
+/* Move down content because we have a fixed navbar that is 50px tall */
+body {
+  padding-top: 50px;
+  padding-bottom: 20px;
+}
+
+.console {
+    max-height: 300px;
+    overflow-y:scroll; 
+}
+
+.monospace {
+  font-family: "Courier New", Courier, monospace;
+}

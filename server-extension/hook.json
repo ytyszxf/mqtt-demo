@@ -1,0 +1,14 @@
+{
+  "kiicloud://things": [
+    {
+      "when": "THING_DISCONNECTED",
+      "what": "EXECUTE_SERVER_CODE",
+      "endpoint": "whenThingDisconnected"
+    },
+    {
+      "when": "THING_CONNECTED",
+      "what": "EXECUTE_SERVER_CODE",
+      "endpoint": "whenThingConnected"
+    }
+  ]
+}

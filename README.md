@@ -1,3 +1,6 @@
+#server-extension code
+`server-extension/*`
+
 # MQTT Demo
 
 This is the MQTT over WSS demo for Kii Cloud
